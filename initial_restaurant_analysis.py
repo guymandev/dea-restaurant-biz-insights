@@ -19,10 +19,10 @@ Outputs:
     ./reports/profile_run_<timestamp>.log
 
 Usage:
-    python initial_restaurant_analysis.py
+    python3 initial_restaurant_analysis.py
 
 Optional:
-    python initial_restaurant_analysis.py --data-dir ./data --reports-dir ./reports --download
+    python3 initial_restaurant_analysis.py --data-dir ./data --reports-dir ./reports --download
 """
 
 from __future__ import annotations
@@ -241,6 +241,7 @@ def show_schema(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def summarize_file(filename: str, df: pd.DataFrame) -> dict:
+
     nrows, ncols = df.shape
     null_pct = (df.isna().mean() * 100).sort_values(ascending=False)
     nunique = df.nunique(dropna=True).sort_values(ascending=False)
@@ -257,6 +258,7 @@ def summarize_file(filename: str, df: pd.DataFrame) -> dict:
 
 
 def print_file_profile(filename: str, df: pd.DataFrame) -> None:
+
     nrows, ncols = df.shape
     null_pct = (df.isna().mean() * 100).sort_values(ascending=False)
     nunique = df.nunique(dropna=True).sort_values(ascending=False)
@@ -283,12 +285,16 @@ def print_file_profile(filename: str, df: pd.DataFrame) -> None:
 # -----------------------------------------------------------------------------
 
 def missing_columns(df: pd.DataFrame, required_cols: Iterable[str]) -> list[str]:
+
     return [col for col in required_cols if col not in df.columns]
 
 
 def validate_key(filename: str, df: pd.DataFrame, key_cols: list[str]) -> dict:
+    
     missing = missing_columns(df, key_cols)
+
     if missing:
+
         return {
             "file": filename,
             "candidate_key": "|".join(key_cols),
@@ -309,6 +315,7 @@ def validate_key(filename: str, df: pd.DataFrame, key_cols: list[str]) -> dict:
 
     status = "PASS" if duplicate_key_count == 0 and null_key_rows == 0 else "WARN"
     notes = []
+
     if duplicate_key_count:
         notes.append(f"{duplicate_key_count:,} duplicate key rows")
     if null_key_rows:
@@ -330,7 +337,9 @@ def validate_key(filename: str, df: pd.DataFrame, key_cols: list[str]) -> dict:
 
 
 def check_numeric_column(df: pd.DataFrame, filename: str, col: str) -> dict:
+
     if col not in df.columns:
+
         return {
             "file": filename,
             "check_name": f"numeric_{col}",
@@ -344,6 +353,7 @@ def check_numeric_column(df: pd.DataFrame, filename: str, col: str) -> dict:
     invalid = non_null_original & coerced.isna()
 
     status = "PASS" if int(invalid.sum()) == 0 else "FAIL"
+
     return {
         "file": filename,
         "check_name": f"numeric_{col}",
@@ -354,6 +364,7 @@ def check_numeric_column(df: pd.DataFrame, filename: str, col: str) -> dict:
 
 
 def check_non_positive(df: pd.DataFrame, filename: str, col: str, allow_negative: bool = False) -> list[dict]:
+
     if col not in df.columns:
         return [{
             "file": filename,
@@ -402,11 +413,13 @@ def validate_relationships(dfs: dict[str, pd.DataFrame]) -> list[dict]:
 
     # order_item_options -> order_items on order_id + lineitem_id
     if order_items is not None and options is not None:
+
         join_cols = ["order_id", "lineitem_id"]
         missing_left = missing_columns(options, join_cols)
         missing_right = missing_columns(order_items, join_cols)
 
         if missing_left or missing_right:
+
             results.append({
                 "relationship": "order_item_options -> order_items",
                 "join_columns": "order_id|lineitem_id",
@@ -417,11 +430,14 @@ def validate_relationships(dfs: dict[str, pd.DataFrame]) -> list[dict]:
                 "unmatched_pct": None,
                 "notes": f"Missing columns. options={missing_left}, order_items={missing_right}",
             })
+
         else:
+
             parent_keys = order_items[join_cols].drop_duplicates()
             merged = options[join_cols].merge(parent_keys, on=join_cols, how="left", indicator=True)
             unmatched = int((merged["_merge"] == "left_only").sum())
             total = len(options)
+
             results.append({
                 "relationship": "order_item_options -> order_items",
                 "join_columns": "order_id|lineitem_id",
@@ -435,12 +451,14 @@ def validate_relationships(dfs: dict[str, pd.DataFrame]) -> list[dict]:
 
     # order_items.creation_time_utc date -> date_dim.date_key
     if order_items is not None and date_dim is not None:
+
         required_order_cols = ["creation_time_utc"]
         required_date_cols = ["date_key"]
         missing_order = missing_columns(order_items, required_order_cols)
         missing_date = missing_columns(date_dim, required_date_cols)
 
         if missing_order or missing_date:
+
             results.append({
                 "relationship": "order_items order_date -> date_dim",
                 "join_columns": "DATE(creation_time_utc)|date_key",
@@ -472,6 +490,7 @@ def validate_relationships(dfs: dict[str, pd.DataFrame]) -> list[dict]:
             invalid_timestamp_count = int(order_dates.isna().sum())
 
             status = "PASS" if unmatched == 0 and invalid_timestamp_count == 0 else "WARN"
+
             results.append({
                 "relationship": "order_items order_date -> date_dim",
                 "join_columns": "DATE(creation_time_utc)|date_key",
@@ -606,6 +625,7 @@ def validate_data_quality(dfs: dict[str, pd.DataFrame]) -> list[dict]:
 
 
 def build_metric_readiness(dfs: dict[str, pd.DataFrame]) -> list[dict]:
+
     rows = []
 
     for metric_name, config in METRIC_REQUIREMENTS.items():
@@ -627,6 +647,7 @@ def build_metric_readiness(dfs: dict[str, pd.DataFrame]) -> list[dict]:
                 missing_items.append(f"{filename}: {', '.join(missing)}")
 
         status = "READY" if not missing_items else "NOT_READY"
+
         rows.append({
             "metric_area": metric_name,
             "status": status,
@@ -638,9 +659,12 @@ def build_metric_readiness(dfs: dict[str, pd.DataFrame]) -> list[dict]:
 
     # Add relationship-driven readiness notes.
     if "order_items.csv" in dfs and "order_item_options.csv" in dfs:
+
         order_items = dfs["order_items.csv"]
         options = dfs["order_item_options.csv"]
+
         if all(col in order_items.columns for col in ["order_id", "lineitem_id"]) and all(col in options.columns for col in ["order_id", "lineitem_id"]):
+
             rows.append({
                 "metric_area": "Revenue Enrichment Relationship",
                 "status": "READY",
@@ -658,6 +682,7 @@ def build_metric_readiness(dfs: dict[str, pd.DataFrame]) -> list[dict]:
 # -----------------------------------------------------------------------------
 
 def print_business_snapshot(dfs: dict[str, pd.DataFrame]) -> None:
+
     order_items = dfs.get("order_items.csv")
     options = dfs.get("order_item_options.csv")
 
@@ -702,11 +727,13 @@ def write_report(df: pd.DataFrame, ctx: AnalysisContext, base_name: str) -> Path
 
 
 def run_analysis(data_dir: str = "./data", reports_dir: str = "./reports", download: bool = False, overwrite: bool = False) -> None:
+
     ctx = AnalysisContext(
         data_dir=Path(data_dir),
         reports_dir=Path(reports_dir),
         timestamp=datetime.now().strftime("%Y%m%d_%H%M%S"),
     )
+
     ctx.reports_dir.mkdir(parents=True, exist_ok=True)
 
     if download:
@@ -795,6 +822,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    
     args = parse_args()
     reports_dir = Path(args.reports_dir)
     reports_dir.mkdir(parents=True, exist_ok=True)
