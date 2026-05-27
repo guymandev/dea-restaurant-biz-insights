@@ -1,0 +1,9 @@
+{
+  "JOB_NAME": "restaurant_ingest_order_items_to_raw_local",
+  "AWS_REGION": "us-east-2",
+  "JDBC_URL": "jdbc:sqlserver://YOUR_RDS_ENDPOINT:1433;databaseName=GlobalPartners;encrypt=true;trustServerCertificate=true;",
+  "DB_TABLE": "dbo.order_items",
+  "DB_USER": "admin",
+  "SECRET_ID": "arn:aws:secretsmanager:us-east-2:662505430425:secret:YOUR_SECRET_NAME",
+  "S3_OUTPUT_PATH": "s3://dea-restaurant-biz-insights/raw/order_items"
+}
