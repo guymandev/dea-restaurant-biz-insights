@@ -1,0 +1,7 @@
+{
+  "JOB_NAME": "restaurant_gold_fact_order_line",
+  "ORDER_ITEMS_SILVER_BASE_PATH": "s3://<bucket-name>/silver/order_items_clean",
+  "ORDER_ITEM_OPTIONS_SILVER_BASE_PATH": "s3://<bucket-name>/silver/order_item_options_clean",
+  "GOLD_BASE_PATH": "s3://<bucket-name>/gold/fact_order_line",
+  "INGEST_DATE": "YYYY-MM-DD optional; omit to use current UTC date"
+}
