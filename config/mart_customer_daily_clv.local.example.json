@@ -1,0 +1,6 @@
+{
+  "JOB_NAME": "restaurant_mart_customer_daily_clv",
+  "FACT_ORDER_BASE_PATH": "s3://<bucket-name>/gold/fact_order",
+  "MART_BASE_PATH": "s3://<bucket-name>/marts/customer_daily_clv",
+  "INGEST_DATE": "YYYY-MM-DD optional; omit to use current UTC date"
+}
