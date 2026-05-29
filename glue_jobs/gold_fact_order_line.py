@@ -158,6 +158,11 @@ def main() -> None:
     options_by_lineitem_count = options_by_lineitem.count()
     print(f"Aggregated option line-item row count: {options_by_lineitem_count}")
 
+    # order_item_options has repeated candidate option keys.
+    # The Gold fact_order_line job aggregates all options to order_id + lineitem_id before joining to order_items, preventing join-driven revenue duplication.
+    # The pipeline does not currently deduplicate repeated option rows because repeated modifiers may represent valid source-system behavior. 
+    # Further exact-duplicate analysis is recommended before applying deduplication logic.
+
     fact_order_line = (
         order_items.alias("oi")
         .join(
