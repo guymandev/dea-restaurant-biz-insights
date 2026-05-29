@@ -1,6 +1,7 @@
 import sys
 import json
 from pathlib import Path
+from datetime import datetime, timezone
 
 from awsglue.context import GlueContext
 from awsglue.job import Job
@@ -9,14 +10,15 @@ from pyspark.context import SparkContext
 from pyspark.sql import functions as F
 from pyspark.sql.types import BooleanType, IntegerType, StringType
 
-
 REQUIRED_ARGS = [
     "JOB_NAME",
     "RAW_BASE_PATH",
     "SILVER_BASE_PATH",
-    "INGEST_DATE",
 ]
 
+OPTIONAL_ARGS = [
+    "INGEST_DATE",
+]
 
 LOCAL_CONFIG_PATH = Path("config/silver_date_dim_clean.local.json")
 
@@ -25,34 +27,68 @@ def running_in_glue() -> bool:
     return "--JOB_NAME" in sys.argv
 
 
+def default_ingest_date() -> str:
+    """
+    Default to the current UTC date when INGEST_DATE is not provided.
+    This supports normal daily workflow runs while still allowing explicit
+    backfill/debug dates.
+    """
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def get_glue_args(required_args: list[str], optional_args: list[str]) -> dict:
+    """
+    Load required Glue args and any optional Glue args that are actually present.
+
+    Glue's getResolvedOptions raises an error if an argument is requested but
+    was not supplied, so optional args must be detected before requesting them.
+    """
+    args = getResolvedOptions(sys.argv, required_args)
+
+    supplied_optional_args = [
+        arg for arg in optional_args
+        if f"--{arg}" in sys.argv
+    ]
+
+    if supplied_optional_args:
+        args.update(getResolvedOptions(sys.argv, supplied_optional_args))
+
+    return args
+
+
 def load_args() -> dict:
     """
     Load arguments from AWS Glue job parameters when running in Glue.
     Load arguments from local JSON config when running locally.
 
+    INGEST_DATE is optional in both modes:
+    - If provided, use it.
+    - If omitted, default to current UTC date.
+
     Note: local execution still requires a compatible Spark/Glue runtime.
     The local config is primarily useful for documentation and parameter tracking.
     """
     if running_in_glue():
-        return getResolvedOptions(sys.argv, REQUIRED_ARGS)
+        args = get_glue_args(REQUIRED_ARGS, OPTIONAL_ARGS)
+    else:
+        if not LOCAL_CONFIG_PATH.exists():
+            raise FileNotFoundError(
+                f"Local config file not found: {LOCAL_CONFIG_PATH}. "
+                "Copy config/silver_date_dim_clean.local.example.json to "
+                "config/silver_date_dim_clean.local.json and fill in the values."
+            )
 
-    if not LOCAL_CONFIG_PATH.exists():
-        raise FileNotFoundError(
-            f"Local config file not found: {LOCAL_CONFIG_PATH}. "
-            "Copy config/silver_date_dim_clean.local.example.json to "
-            "config/silver_date_dim_clean.local.json and fill in the values."
-        )
-
-    with LOCAL_CONFIG_PATH.open("r", encoding="utf-8") as f:
-        args = json.load(f)
+        with LOCAL_CONFIG_PATH.open("r", encoding="utf-8") as f:
+            args = json.load(f)
 
     missing = [key for key in REQUIRED_ARGS if key not in args or not args[key]]
 
     if missing:
-        raise ValueError(f"Missing required local config values: {missing}")
+        raise ValueError(f"Missing required config values: {missing}")
+
+    args["INGEST_DATE"] = args.get("INGEST_DATE") or default_ingest_date()
 
     return args
-
 
 def normalize_column_names(df):
     """
