@@ -1,0 +1,6 @@
+{
+  "JOB_NAME": "restaurant_gold_fact_order",
+  "FACT_ORDER_LINE_BASE_PATH": "s3://<bucket-name>/gold/fact_order_line",
+  "GOLD_BASE_PATH": "s3://<bucket-name>/gold/fact_order",
+  "INGEST_DATE": "YYYY-MM-DD optional; omit to use current UTC date"
+}
