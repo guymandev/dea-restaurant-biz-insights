@@ -1,0 +1,6 @@
+{
+  "JOB_NAME": "restaurant_mart_customer_clv_snapshot",
+  "CUSTOMER_DAILY_CLV_BASE_PATH": "s3://<bucket-name>/marts/customer_daily_clv",
+  "MART_BASE_PATH": "s3://<bucket-name>/marts/customer_clv_snapshot",
+  "INGEST_DATE": "YYYY-MM-DD optional; omit to use current UTC date"
+}
