@@ -1,0 +1,6 @@
+{
+  "JOB_NAME": "restaurant_silver_date_dim_clean",
+  "RAW_BASE_PATH": "s3://<bucket-name>/raw/date_dim",
+  "SILVER_BASE_PATH": "s3://<bucket-name>/silver/date_dim_clean",
+  "INGEST_DATE": "YYYY-MM-DD"
+}
