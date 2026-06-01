@@ -132,7 +132,7 @@ def main() -> None:
         )
     )
 
-    snapshot = (
+    snapshot_base = (
         daily_clv
         .withColumn("customer_recency_rank", F.row_number().over(latest_customer_window))
         .filter(F.col("customer_recency_rank") == F.lit(1))
@@ -147,10 +147,27 @@ def main() -> None:
             F.col("daily_net_revenue").alias("latest_daily_net_revenue"),
             F.col("daily_restaurant_count").alias("latest_daily_restaurant_count"),
             F.col("is_loyalty_customer_day").alias("latest_is_loyalty_customer_day"),
-            F.col("clv_quartile").alias("latest_clv_quartile"),
-            F.col("clv_tier").alias("latest_clv_tier"),
-            F.lit(ingest_date).alias("ingest_date"),
         )
+    )
+
+    # Assign CLV tiers at the customer snapshot grain.
+    # This ranks customers against other customers based on lifetime_net_revenue.
+    customer_clv_window = Window.orderBy(F.col("lifetime_net_revenue").asc())
+
+    snapshot = (
+        snapshot_base
+        .withColumn(
+            "clv_quartile",
+            F.ntile(4).over(customer_clv_window),
+        )
+        .withColumn(
+            "clv_tier",
+            F.when(F.col("clv_quartile") == 4, F.lit("high"))
+            .when(F.col("clv_quartile") == 3, F.lit("medium_high"))
+            .when(F.col("clv_quartile") == 2, F.lit("medium_low"))
+            .otherwise(F.lit("low"))
+        )
+        .withColumn("ingest_date", F.lit(ingest_date))
     )
 
     snapshot_count = snapshot.count()
@@ -170,19 +187,23 @@ def main() -> None:
 
     tier_counts = (
         snapshot
-        .groupBy("latest_clv_tier")
+        .groupBy("clv_tier")
         .count()
-        .orderBy("latest_clv_tier")
         .collect()
     )
+
+    tier_count_map = {
+        row["clv_tier"]: row["count"]
+        for row in tier_counts
+    }
 
     print(f"Customer CLV snapshot row count: {snapshot_count}")
     print(f"Distinct customers in snapshot: {distinct_customer_count}")
     print(f"Total lifetime net revenue across customers: {total_lifetime_net_revenue}")
     print(f"Max lifetime net revenue: {max_lifetime_net_revenue}")
 
-    for row in tier_counts:
-        print(f"CLV tier count - {row['latest_clv_tier']}: {row['count']}")
+    for tier in ["high", "medium_high", "medium_low", "low"]:
+        print(f"CLV tier count - {tier}: {tier_count_map.get(tier, 0)}")
 
     if snapshot_count <= 0:
         raise ValueError("customer_clv_snapshot mart produced zero rows.")
