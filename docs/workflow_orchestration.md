@@ -12,7 +12,7 @@ SQL Server → S3 raw → S3 silver → S3 gold → S3 marts
 
 ## AWS Glue console workflow screenshot
 
-![AWS Glue workflow overview](images/glue_workflow_overview.png)
+![AWS Glue workflow overview](images/restaurant_daily_pipeline_workflow.png)
 
 ## Mermaid Workflow diagram
 
