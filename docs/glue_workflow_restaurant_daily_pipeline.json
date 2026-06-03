@@ -1,0 +1,1519 @@
+{
+    "Workflow": {
+        "Name": "restaurant_daily_pipeline_workflow",
+        "Description": "Orchestrates the daily restaurant analytics pipeline, starting with SQL Server to S3 raw ingestion jobs and later expanding to silver, gold, and mart transformations.",
+        "DefaultRunProperties": {},
+        "CreatedOn": "2026-05-28T04:04:14.381000+00:00",
+        "LastModifiedOn": "2026-05-28T04:04:14.381000+00:00",
+        "LastRun": {
+            "Name": "restaurant_daily_pipeline_workflow",
+            "WorkflowRunId": "wr_515cd0725390ba62aba27aa5052656ddd391f7e459b7e0c8d2f7f0246eec2e21",
+            "WorkflowRunProperties": {},
+            "StartedOn": "2026-06-03T03:49:18.042000+00:00",
+            "CompletedOn": "2026-06-03T04:05:51.155000+00:00",
+            "Status": "COMPLETED",
+            "Statistics": {
+                "TotalActions": 16,
+                "TimeoutActions": 0,
+                "FailedActions": 0,
+                "StoppedActions": 0,
+                "SucceededActions": 16,
+                "RunningActions": 0,
+                "ErroredActions": 0,
+                "WaitingActions": 0
+            },
+            "Graph": {
+                "Nodes": [
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_daily_pipeline_start_trigger",
+                        "UniqueId": "wnode_cfb04b75a984decf970a9121a8dd3083dd7ad66fe9387949618ed39eb7d20b8d",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_daily_pipeline_start_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "ON_DEMAND",
+                                "State": "CREATED",
+                                "Description": "Starts the restaurant daily pipeline workflow manually for testing and validation.",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_ingest_date_dim_to_raw"
+                                    },
+                                    {
+                                        "JobName": "restaurant_ingest_order_item_options_to_raw"
+                                    },
+                                    {
+                                        "JobName": "restaurant_ingest_order_items_to_raw"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_ingest_date_dim_trigger",
+                        "UniqueId": "wnode_a7a1adb1fc3b50b298f54cba3d9289652c0a6b6b970193d243ba271ea945b536",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_ingest_date_dim_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_silver_date_dim_clean"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "ANY",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_ingest_date_dim_to_raw",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_ingest_order_item_options_trigger",
+                        "UniqueId": "wnode_e171e1dd5139e896a216bf147d0e84a215988c6e713334c14536e7300ed6c5dd",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_ingest_order_item_options_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_silver_order_item_options_clean"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "ANY",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_ingest_order_item_options_to_raw",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_ingest_order_items_trigger",
+                        "UniqueId": "wnode_c599a9a6100df9cbac8bbf45a14b01e6f3445801f2b178b7cd3d0aebb4938c08",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_ingest_order_items_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_silver_order_items_clean"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "ANY",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_ingest_order_items_to_raw",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_silver_order_items_and_options_trigger",
+                        "UniqueId": "wnode_7360fc0bd36b095d1ab19ef9ebd5cf557fc11dc36c5f78aef83b7634aa6b105a",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_silver_order_items_and_options_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_gold_fact_order_line"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "AND",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_silver_order_items_clean",
+                                            "State": "SUCCEEDED"
+                                        },
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_silver_order_item_options_clean",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_gold_fact_order_line_trigger",
+                        "UniqueId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_gold_fact_order_line_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_gold_fact_order"
+                                    },
+                                    {
+                                        "JobName": "restaurant_mart_item_sales"
+                                    },
+                                    {
+                                        "JobName": "restaurant_mart_restaurant_item_sales"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "ANY",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_gold_fact_order_line",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_gold_fact_order_trigger",
+                        "UniqueId": "wnode_f654d68d138e9c871e259e74b8f6883d386a7fec102bab3889a904477e9cc542",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_gold_fact_order_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_mart_customer_daily_clv"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "ANY",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_gold_fact_order",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_customer_daily_clv_trigger",
+                        "UniqueId": "wnode_c1bf48a2390e2fb27b7a025b26ec38f66a84fc613fde88fd5418fe646ed77416",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_customer_daily_clv_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_mart_customer_clv_snapshot"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "ANY",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_mart_customer_daily_clv",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_customer_clv_snapshot_trigger",
+                        "UniqueId": "wnode_941744e40992ced1fef04e33cbb36005b1137b41e8e3c171e104551c82839477",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_customer_clv_snapshot_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_mart_customer_rfm"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "ANY",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_mart_customer_clv_snapshot",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_gold_fact_order_and_date_dim_trigger",
+                        "UniqueId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_gold_fact_order_and_date_dim_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_mart_daily_sales"
+                                    },
+                                    {
+                                        "JobName": "restaurant_mart_restaurant_daily_sales"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "AND",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_gold_fact_order",
+                                            "State": "SUCCEEDED"
+                                        },
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_silver_date_dim_clean",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "TRIGGER",
+                        "Name": "restaurant_after_silver_order_item_options_mart_trigger",
+                        "UniqueId": "wnode_557708a162caf2aeba57ae9f0f6fa8e1e6515e335652ba4837c0bd110b96f1e4",
+                        "TriggerDetails": {
+                            "Trigger": {
+                                "Name": "restaurant_after_silver_order_item_options_mart_trigger",
+                                "WorkflowName": "restaurant_daily_pipeline_workflow",
+                                "Type": "CONDITIONAL",
+                                "State": "ACTIVATED",
+                                "Actions": [
+                                    {
+                                        "JobName": "restaurant_mart_option_sales"
+                                    }
+                                ],
+                                "Predicate": {
+                                    "Logical": "ANY",
+                                    "Conditions": [
+                                        {
+                                            "LogicalOperator": "EQUALS",
+                                            "JobName": "restaurant_silver_order_item_options_clean",
+                                            "State": "SUCCEEDED"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_ingest_order_items_to_raw",
+                        "UniqueId": "wnode_4c8047d424ddbce98012a3609c2f7d2489558d4722d40310c70f66725e831a74",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_593e12faefb45d05e9ef3998158c7eea13c5ec605bde226268a982c8f1a35176",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_daily_pipeline_start_trigger",
+                                    "JobName": "restaurant_ingest_order_items_to_raw",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:49:53.328000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:53:06.833000+00:00",
+                                    "CompletedOn": "2026-06-03T03:53:06.833000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 175,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 1753.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_mart_daily_sales",
+                        "UniqueId": "wnode_ca0a34bfe53b09b65ef488356120994fb860f6f58e6b7cbbe2f5b246595b5f58",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_2bdafbf7d7fcb864ebf59dc9b3ed6ea4d5193b4880ed5df16c5fd157740b5255",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_gold_fact_order_and_date_dim_trigger",
+                                    "JobName": "restaurant_mart_daily_sales",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T04:00:03.860000+00:00",
+                                    "LastModifiedOn": "2026-06-03T04:01:48.973000+00:00",
+                                    "CompletedOn": "2026-06-03T04:01:48.973000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 95,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 956.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_mart_option_sales",
+                        "UniqueId": "wnode_54ba1c4e5ef4c8ec572f4e13186071d0c37c3128edfe7ef2fa7cbc01a711ceb5",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_265dcfb29e74839b01ccba6bec1c9b6aaf02fc2528e67ee250da50a625124924",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_silver_order_item_options_mart_trigger",
+                                    "JobName": "restaurant_mart_option_sales",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:55:38.859000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:57:15.157000+00:00",
+                                    "CompletedOn": "2026-06-03T03:57:15.157000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 91,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 917.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_silver_date_dim_clean",
+                        "UniqueId": "wnode_0c9c8eb0584ab030d529092fd28ea1fde93f03c26700a436665ab55bab707faa",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_1085f4284d5f18c0a5fec851cc09f507683a8a0112c949811c305ef465b4bcef",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_ingest_date_dim_trigger",
+                                    "JobName": "restaurant_silver_date_dim_clean",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:52:57.423000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:54:12.613000+00:00",
+                                    "CompletedOn": "2026-06-03T03:54:12.613000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 69,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 691.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_mart_customer_rfm",
+                        "UniqueId": "wnode_d6c92912206a52163512d742ee94e5abc5a59e3e42ddca6bfded08adfe1f12d3",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_cd7622d70f08c56c8fe24002d0a4237340789da5dd458be486ad5dff89ae7069",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_customer_clv_snapshot_trigger",
+                                    "JobName": "restaurant_mart_customer_rfm",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T04:04:27.489000+00:00",
+                                    "LastModifiedOn": "2026-06-03T04:05:51.155000+00:00",
+                                    "CompletedOn": "2026-06-03T04:05:51.155000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 79,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 792.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_silver_order_item_options_clean",
+                        "UniqueId": "wnode_f15b4b28a088b78246823b5293d50f68d0543d49b74cdaf37abc82efc2325a95",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_51d9b81469f5799d1f3e81188fa63899aba57105874a8117bccae01e0183edb2",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_ingest_order_item_options_trigger",
+                                    "JobName": "restaurant_silver_order_item_options_clean",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:53:31.004000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:55:08.023000+00:00",
+                                    "CompletedOn": "2026-06-03T03:55:08.023000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 89,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 894.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_gold_fact_order_line",
+                        "UniqueId": "wnode_457848afcd0218479179a96dd6a7370af6727152116f6cc5169ffb42ebd0e774",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_efc401eba4a1d63ba8276938cf992a6bc605f61c475087374275aa711b38e7d1",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_silver_order_items_and_options_trigger",
+                                    "JobName": "restaurant_gold_fact_order_line",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:55:38.838000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:57:24.203000+00:00",
+                                    "CompletedOn": "2026-06-03T03:57:24.203000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 99,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 995.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_mart_item_sales",
+                        "UniqueId": "wnode_8ded7357d90a7f33c82871ac04e45f8ffa8830e3dbe7ec27143c9daea70bf975",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_e96d415e9f01c96517953bc321ba8336c25b1a3e9c949c781990d9fa7fa0b97b",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_gold_fact_order_line_trigger",
+                                    "JobName": "restaurant_mart_item_sales",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:57:54.719000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:59:19.427000+00:00",
+                                    "CompletedOn": "2026-06-03T03:59:19.427000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 77,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 773.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_mart_customer_clv_snapshot",
+                        "UniqueId": "wnode_a42abaff113bf522571bee596e33c3a75eb40031c27cbe182342350338df0a75",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_17760b48f031902e44ddc85a7089817efe8d2ee8af38535475bfca16c3297ec8",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_customer_daily_clv_trigger",
+                                    "JobName": "restaurant_mart_customer_clv_snapshot",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T04:02:21.852000+00:00",
+                                    "LastModifiedOn": "2026-06-03T04:03:56.259000+00:00",
+                                    "CompletedOn": "2026-06-03T04:03:56.259000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 89,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 899.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_silver_order_items_clean",
+                        "UniqueId": "wnode_4ca232507967af6eb41d2ccdfbb0b2c6bb7eddcbbb10618d407bb18f79605f70",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_145a42f3818616d034269c5eeb0d61b94765091b85140f4857b69d66500c5a86",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_ingest_order_items_trigger",
+                                    "JobName": "restaurant_silver_order_items_clean",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:53:37.217000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:54:59.697000+00:00",
+                                    "CompletedOn": "2026-06-03T03:54:59.697000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 76,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 761.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_ingest_order_item_options_to_raw",
+                        "UniqueId": "wnode_01dad74b780aac6d9812e14d582d12eebb9396a08fe6b91148cfb87923d22d34",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_46646e568940def545b68fe8e3304d5b5ba44b6622a008522b39e7e57e81140d",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_daily_pipeline_start_trigger",
+                                    "JobName": "restaurant_ingest_order_item_options_to_raw",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:49:53.241000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:53:00.632000+00:00",
+                                    "CompletedOn": "2026-06-03T03:53:00.632000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 164,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 1647.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_ingest_date_dim_to_raw",
+                        "UniqueId": "wnode_ebe3baef201b13f3c0a47238dbaad75cb2f6c5215d9d91dcd01889ada17b1b90",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_cf86c3235585a2b7afe71014de0821f2c33328e5721cf7de413b2c5b9d15f4e5",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_daily_pipeline_start_trigger",
+                                    "JobName": "restaurant_ingest_date_dim_to_raw",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:49:53.146000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:52:27.047000+00:00",
+                                    "CompletedOn": "2026-06-03T03:52:27.047000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 130,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 1308.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_mart_restaurant_daily_sales",
+                        "UniqueId": "wnode_4aad1105352ee01c27478627e1287257bf9b215a978248a1f18595d5cac01fd9",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_04ddf712347ee5b79e7b59e1b45df610be9c1e62043d7f014c7e8563a1976337",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_gold_fact_order_and_date_dim_trigger",
+                                    "JobName": "restaurant_mart_restaurant_daily_sales",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T04:00:03.946000+00:00",
+                                    "LastModifiedOn": "2026-06-03T04:01:46.912000+00:00",
+                                    "CompletedOn": "2026-06-03T04:01:46.912000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 98,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 984.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_gold_fact_order",
+                        "UniqueId": "wnode_72487bac9ed1a401f01cf9d0d8b23adda921db121aaa0c9d517c47c7f815b24f",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_8c407ddd41b2a4f7515c2dfeab4c29736a0bb7c3743b23daabf04ee938644745",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_gold_fact_order_line_trigger",
+                                    "JobName": "restaurant_gold_fact_order",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:57:54.629000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:59:33.401000+00:00",
+                                    "CompletedOn": "2026-06-03T03:59:33.401000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 94,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 943.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_mart_restaurant_item_sales",
+                        "UniqueId": "wnode_82a38b3ad1fc01dfd355b3672e4b1c32c1bd3a8a1ab55c71e5b9dd6ca1fec891",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_d060282c2182cefd262688bf6a941df89f5c948ee50bd38dda2afe6fa59d9c18",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_gold_fact_order_line_trigger",
+                                    "JobName": "restaurant_mart_restaurant_item_sales",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T03:57:54.802000+00:00",
+                                    "LastModifiedOn": "2026-06-03T03:59:22.340000+00:00",
+                                    "CompletedOn": "2026-06-03T03:59:22.340000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 78,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 781.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Type": "JOB",
+                        "Name": "restaurant_mart_customer_daily_clv",
+                        "UniqueId": "wnode_9687c48563c5fee6c6bdc31dbc5496b0462f7e6df514721db6349f22e681163c",
+                        "JobDetails": {
+                            "JobRuns": [
+                                {
+                                    "Id": "jr_5ed08cb3e4569aebf0bd2784493854a74281bab6ee3d1dc33e018ae2a8c4a6c7",
+                                    "Attempt": 0,
+                                    "TriggerName": "restaurant_after_gold_fact_order_trigger",
+                                    "JobName": "restaurant_mart_customer_daily_clv",
+                                    "JobMode": "SCRIPT",
+                                    "JobRunQueuingEnabled": false,
+                                    "StartedOn": "2026-06-03T04:00:03.873000+00:00",
+                                    "LastModifiedOn": "2026-06-03T04:01:51.425000+00:00",
+                                    "CompletedOn": "2026-06-03T04:01:51.425000+00:00",
+                                    "JobRunState": "SUCCEEDED",
+                                    "PredecessorRuns": [],
+                                    "AllocatedCapacity": 10,
+                                    "ExecutionTime": 97,
+                                    "Timeout": 480,
+                                    "MaxCapacity": 10.0,
+                                    "WorkerType": "G.1X",
+                                    "NumberOfWorkers": 10,
+                                    "LogGroupName": "/aws-glue/jobs",
+                                    "GlueVersion": "5.1",
+                                    "DPUSeconds": 979.0,
+                                    "ExecutionClass": "STANDARD"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "Edges": [
+                    {
+                        "SourceId": "wnode_cfb04b75a984decf970a9121a8dd3083dd7ad66fe9387949618ed39eb7d20b8d",
+                        "DestinationId": "wnode_4c8047d424ddbce98012a3609c2f7d2489558d4722d40310c70f66725e831a74"
+                    },
+                    {
+                        "SourceId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8",
+                        "DestinationId": "wnode_ca0a34bfe53b09b65ef488356120994fb860f6f58e6b7cbbe2f5b246595b5f58"
+                    },
+                    {
+                        "SourceId": "wnode_557708a162caf2aeba57ae9f0f6fa8e1e6515e335652ba4837c0bd110b96f1e4",
+                        "DestinationId": "wnode_54ba1c4e5ef4c8ec572f4e13186071d0c37c3128edfe7ef2fa7cbc01a711ceb5"
+                    },
+                    {
+                        "SourceId": "wnode_a7a1adb1fc3b50b298f54cba3d9289652c0a6b6b970193d243ba271ea945b536",
+                        "DestinationId": "wnode_0c9c8eb0584ab030d529092fd28ea1fde93f03c26700a436665ab55bab707faa"
+                    },
+                    {
+                        "SourceId": "wnode_941744e40992ced1fef04e33cbb36005b1137b41e8e3c171e104551c82839477",
+                        "DestinationId": "wnode_d6c92912206a52163512d742ee94e5abc5a59e3e42ddca6bfded08adfe1f12d3"
+                    },
+                    {
+                        "SourceId": "wnode_e171e1dd5139e896a216bf147d0e84a215988c6e713334c14536e7300ed6c5dd",
+                        "DestinationId": "wnode_f15b4b28a088b78246823b5293d50f68d0543d49b74cdaf37abc82efc2325a95"
+                    },
+                    {
+                        "SourceId": "wnode_7360fc0bd36b095d1ab19ef9ebd5cf557fc11dc36c5f78aef83b7634aa6b105a",
+                        "DestinationId": "wnode_457848afcd0218479179a96dd6a7370af6727152116f6cc5169ffb42ebd0e774"
+                    },
+                    {
+                        "SourceId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8",
+                        "DestinationId": "wnode_8ded7357d90a7f33c82871ac04e45f8ffa8830e3dbe7ec27143c9daea70bf975"
+                    },
+                    {
+                        "SourceId": "wnode_c1bf48a2390e2fb27b7a025b26ec38f66a84fc613fde88fd5418fe646ed77416",
+                        "DestinationId": "wnode_a42abaff113bf522571bee596e33c3a75eb40031c27cbe182342350338df0a75"
+                    },
+                    {
+                        "SourceId": "wnode_c599a9a6100df9cbac8bbf45a14b01e6f3445801f2b178b7cd3d0aebb4938c08",
+                        "DestinationId": "wnode_4ca232507967af6eb41d2ccdfbb0b2c6bb7eddcbbb10618d407bb18f79605f70"
+                    },
+                    {
+                        "SourceId": "wnode_cfb04b75a984decf970a9121a8dd3083dd7ad66fe9387949618ed39eb7d20b8d",
+                        "DestinationId": "wnode_01dad74b780aac6d9812e14d582d12eebb9396a08fe6b91148cfb87923d22d34"
+                    },
+                    {
+                        "SourceId": "wnode_cfb04b75a984decf970a9121a8dd3083dd7ad66fe9387949618ed39eb7d20b8d",
+                        "DestinationId": "wnode_ebe3baef201b13f3c0a47238dbaad75cb2f6c5215d9d91dcd01889ada17b1b90"
+                    },
+                    {
+                        "SourceId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8",
+                        "DestinationId": "wnode_4aad1105352ee01c27478627e1287257bf9b215a978248a1f18595d5cac01fd9"
+                    },
+                    {
+                        "SourceId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8",
+                        "DestinationId": "wnode_72487bac9ed1a401f01cf9d0d8b23adda921db121aaa0c9d517c47c7f815b24f"
+                    },
+                    {
+                        "SourceId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8",
+                        "DestinationId": "wnode_82a38b3ad1fc01dfd355b3672e4b1c32c1bd3a8a1ab55c71e5b9dd6ca1fec891"
+                    },
+                    {
+                        "SourceId": "wnode_f654d68d138e9c871e259e74b8f6883d386a7fec102bab3889a904477e9cc542",
+                        "DestinationId": "wnode_9687c48563c5fee6c6bdc31dbc5496b0462f7e6df514721db6349f22e681163c"
+                    },
+                    {
+                        "SourceId": "wnode_ebe3baef201b13f3c0a47238dbaad75cb2f6c5215d9d91dcd01889ada17b1b90",
+                        "DestinationId": "wnode_a7a1adb1fc3b50b298f54cba3d9289652c0a6b6b970193d243ba271ea945b536"
+                    },
+                    {
+                        "SourceId": "wnode_01dad74b780aac6d9812e14d582d12eebb9396a08fe6b91148cfb87923d22d34",
+                        "DestinationId": "wnode_e171e1dd5139e896a216bf147d0e84a215988c6e713334c14536e7300ed6c5dd"
+                    },
+                    {
+                        "SourceId": "wnode_4c8047d424ddbce98012a3609c2f7d2489558d4722d40310c70f66725e831a74",
+                        "DestinationId": "wnode_c599a9a6100df9cbac8bbf45a14b01e6f3445801f2b178b7cd3d0aebb4938c08"
+                    },
+                    {
+                        "SourceId": "wnode_a42abaff113bf522571bee596e33c3a75eb40031c27cbe182342350338df0a75",
+                        "DestinationId": "wnode_941744e40992ced1fef04e33cbb36005b1137b41e8e3c171e104551c82839477"
+                    },
+                    {
+                        "SourceId": "wnode_457848afcd0218479179a96dd6a7370af6727152116f6cc5169ffb42ebd0e774",
+                        "DestinationId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8"
+                    },
+                    {
+                        "SourceId": "wnode_f15b4b28a088b78246823b5293d50f68d0543d49b74cdaf37abc82efc2325a95",
+                        "DestinationId": "wnode_557708a162caf2aeba57ae9f0f6fa8e1e6515e335652ba4837c0bd110b96f1e4"
+                    },
+                    {
+                        "SourceId": "wnode_4ca232507967af6eb41d2ccdfbb0b2c6bb7eddcbbb10618d407bb18f79605f70",
+                        "DestinationId": "wnode_7360fc0bd36b095d1ab19ef9ebd5cf557fc11dc36c5f78aef83b7634aa6b105a"
+                    },
+                    {
+                        "SourceId": "wnode_f15b4b28a088b78246823b5293d50f68d0543d49b74cdaf37abc82efc2325a95",
+                        "DestinationId": "wnode_7360fc0bd36b095d1ab19ef9ebd5cf557fc11dc36c5f78aef83b7634aa6b105a"
+                    },
+                    {
+                        "SourceId": "wnode_9687c48563c5fee6c6bdc31dbc5496b0462f7e6df514721db6349f22e681163c",
+                        "DestinationId": "wnode_c1bf48a2390e2fb27b7a025b26ec38f66a84fc613fde88fd5418fe646ed77416"
+                    },
+                    {
+                        "SourceId": "wnode_72487bac9ed1a401f01cf9d0d8b23adda921db121aaa0c9d517c47c7f815b24f",
+                        "DestinationId": "wnode_f654d68d138e9c871e259e74b8f6883d386a7fec102bab3889a904477e9cc542"
+                    },
+                    {
+                        "SourceId": "wnode_72487bac9ed1a401f01cf9d0d8b23adda921db121aaa0c9d517c47c7f815b24f",
+                        "DestinationId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8"
+                    },
+                    {
+                        "SourceId": "wnode_0c9c8eb0584ab030d529092fd28ea1fde93f03c26700a436665ab55bab707faa",
+                        "DestinationId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8"
+                    }
+                ]
+            }
+        },
+        "Graph": {
+            "Nodes": [
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_daily_pipeline_start_trigger",
+                    "UniqueId": "wnode_cfb04b75a984decf970a9121a8dd3083dd7ad66fe9387949618ed39eb7d20b8d",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_daily_pipeline_start_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "ON_DEMAND",
+                            "State": "CREATED",
+                            "Description": "Starts the restaurant daily pipeline workflow manually for testing and validation.",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_ingest_date_dim_to_raw"
+                                },
+                                {
+                                    "JobName": "restaurant_ingest_order_item_options_to_raw"
+                                },
+                                {
+                                    "JobName": "restaurant_ingest_order_items_to_raw"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_ingest_date_dim_trigger",
+                    "UniqueId": "wnode_a7a1adb1fc3b50b298f54cba3d9289652c0a6b6b970193d243ba271ea945b536",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_ingest_date_dim_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_silver_date_dim_clean"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "ANY",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_ingest_date_dim_to_raw",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_ingest_order_item_options_trigger",
+                    "UniqueId": "wnode_e171e1dd5139e896a216bf147d0e84a215988c6e713334c14536e7300ed6c5dd",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_ingest_order_item_options_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_silver_order_item_options_clean"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "ANY",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_ingest_order_item_options_to_raw",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_ingest_order_items_trigger",
+                    "UniqueId": "wnode_c599a9a6100df9cbac8bbf45a14b01e6f3445801f2b178b7cd3d0aebb4938c08",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_ingest_order_items_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_silver_order_items_clean"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "ANY",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_ingest_order_items_to_raw",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_silver_order_items_and_options_trigger",
+                    "UniqueId": "wnode_7360fc0bd36b095d1ab19ef9ebd5cf557fc11dc36c5f78aef83b7634aa6b105a",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_silver_order_items_and_options_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_gold_fact_order_line"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "AND",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_silver_order_items_clean",
+                                        "State": "SUCCEEDED"
+                                    },
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_silver_order_item_options_clean",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_gold_fact_order_line_trigger",
+                    "UniqueId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_gold_fact_order_line_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_gold_fact_order"
+                                },
+                                {
+                                    "JobName": "restaurant_mart_item_sales"
+                                },
+                                {
+                                    "JobName": "restaurant_mart_restaurant_item_sales"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "ANY",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_gold_fact_order_line",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_gold_fact_order_trigger",
+                    "UniqueId": "wnode_f654d68d138e9c871e259e74b8f6883d386a7fec102bab3889a904477e9cc542",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_gold_fact_order_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_mart_customer_daily_clv"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "ANY",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_gold_fact_order",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_customer_daily_clv_trigger",
+                    "UniqueId": "wnode_c1bf48a2390e2fb27b7a025b26ec38f66a84fc613fde88fd5418fe646ed77416",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_customer_daily_clv_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_mart_customer_clv_snapshot"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "ANY",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_mart_customer_daily_clv",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_customer_clv_snapshot_trigger",
+                    "UniqueId": "wnode_941744e40992ced1fef04e33cbb36005b1137b41e8e3c171e104551c82839477",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_customer_clv_snapshot_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_mart_customer_rfm"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "ANY",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_mart_customer_clv_snapshot",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_gold_fact_order_and_date_dim_trigger",
+                    "UniqueId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_gold_fact_order_and_date_dim_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_mart_daily_sales"
+                                },
+                                {
+                                    "JobName": "restaurant_mart_restaurant_daily_sales"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "AND",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_gold_fact_order",
+                                        "State": "SUCCEEDED"
+                                    },
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_silver_date_dim_clean",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "TRIGGER",
+                    "Name": "restaurant_after_silver_order_item_options_mart_trigger",
+                    "UniqueId": "wnode_557708a162caf2aeba57ae9f0f6fa8e1e6515e335652ba4837c0bd110b96f1e4",
+                    "TriggerDetails": {
+                        "Trigger": {
+                            "Name": "restaurant_after_silver_order_item_options_mart_trigger",
+                            "WorkflowName": "restaurant_daily_pipeline_workflow",
+                            "Type": "CONDITIONAL",
+                            "State": "ACTIVATED",
+                            "Actions": [
+                                {
+                                    "JobName": "restaurant_mart_option_sales"
+                                }
+                            ],
+                            "Predicate": {
+                                "Logical": "ANY",
+                                "Conditions": [
+                                    {
+                                        "LogicalOperator": "EQUALS",
+                                        "JobName": "restaurant_silver_order_item_options_clean",
+                                        "State": "SUCCEEDED"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_silver_order_items_clean",
+                    "UniqueId": "wnode_4ca232507967af6eb41d2ccdfbb0b2c6bb7eddcbbb10618d407bb18f79605f70",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_mart_customer_clv_snapshot",
+                    "UniqueId": "wnode_a42abaff113bf522571bee596e33c3a75eb40031c27cbe182342350338df0a75",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_silver_order_item_options_clean",
+                    "UniqueId": "wnode_f15b4b28a088b78246823b5293d50f68d0543d49b74cdaf37abc82efc2325a95",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_gold_fact_order",
+                    "UniqueId": "wnode_72487bac9ed1a401f01cf9d0d8b23adda921db121aaa0c9d517c47c7f815b24f",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_mart_item_sales",
+                    "UniqueId": "wnode_8ded7357d90a7f33c82871ac04e45f8ffa8830e3dbe7ec27143c9daea70bf975",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_mart_customer_rfm",
+                    "UniqueId": "wnode_d6c92912206a52163512d742ee94e5abc5a59e3e42ddca6bfded08adfe1f12d3",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_silver_date_dim_clean",
+                    "UniqueId": "wnode_0c9c8eb0584ab030d529092fd28ea1fde93f03c26700a436665ab55bab707faa",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_mart_option_sales",
+                    "UniqueId": "wnode_54ba1c4e5ef4c8ec572f4e13186071d0c37c3128edfe7ef2fa7cbc01a711ceb5",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_ingest_order_items_to_raw",
+                    "UniqueId": "wnode_4c8047d424ddbce98012a3609c2f7d2489558d4722d40310c70f66725e831a74",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_mart_daily_sales",
+                    "UniqueId": "wnode_ca0a34bfe53b09b65ef488356120994fb860f6f58e6b7cbbe2f5b246595b5f58",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_mart_restaurant_daily_sales",
+                    "UniqueId": "wnode_4aad1105352ee01c27478627e1287257bf9b215a978248a1f18595d5cac01fd9",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_ingest_date_dim_to_raw",
+                    "UniqueId": "wnode_ebe3baef201b13f3c0a47238dbaad75cb2f6c5215d9d91dcd01889ada17b1b90",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_mart_restaurant_item_sales",
+                    "UniqueId": "wnode_82a38b3ad1fc01dfd355b3672e4b1c32c1bd3a8a1ab55c71e5b9dd6ca1fec891",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_ingest_order_item_options_to_raw",
+                    "UniqueId": "wnode_01dad74b780aac6d9812e14d582d12eebb9396a08fe6b91148cfb87923d22d34",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_gold_fact_order_line",
+                    "UniqueId": "wnode_457848afcd0218479179a96dd6a7370af6727152116f6cc5169ffb42ebd0e774",
+                    "JobDetails": {}
+                },
+                {
+                    "Type": "JOB",
+                    "Name": "restaurant_mart_customer_daily_clv",
+                    "UniqueId": "wnode_9687c48563c5fee6c6bdc31dbc5496b0462f7e6df514721db6349f22e681163c",
+                    "JobDetails": {}
+                }
+            ],
+            "Edges": [
+                {
+                    "SourceId": "wnode_c599a9a6100df9cbac8bbf45a14b01e6f3445801f2b178b7cd3d0aebb4938c08",
+                    "DestinationId": "wnode_4ca232507967af6eb41d2ccdfbb0b2c6bb7eddcbbb10618d407bb18f79605f70"
+                },
+                {
+                    "SourceId": "wnode_c1bf48a2390e2fb27b7a025b26ec38f66a84fc613fde88fd5418fe646ed77416",
+                    "DestinationId": "wnode_a42abaff113bf522571bee596e33c3a75eb40031c27cbe182342350338df0a75"
+                },
+                {
+                    "SourceId": "wnode_e171e1dd5139e896a216bf147d0e84a215988c6e713334c14536e7300ed6c5dd",
+                    "DestinationId": "wnode_f15b4b28a088b78246823b5293d50f68d0543d49b74cdaf37abc82efc2325a95"
+                },
+                {
+                    "SourceId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8",
+                    "DestinationId": "wnode_72487bac9ed1a401f01cf9d0d8b23adda921db121aaa0c9d517c47c7f815b24f"
+                },
+                {
+                    "SourceId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8",
+                    "DestinationId": "wnode_8ded7357d90a7f33c82871ac04e45f8ffa8830e3dbe7ec27143c9daea70bf975"
+                },
+                {
+                    "SourceId": "wnode_941744e40992ced1fef04e33cbb36005b1137b41e8e3c171e104551c82839477",
+                    "DestinationId": "wnode_d6c92912206a52163512d742ee94e5abc5a59e3e42ddca6bfded08adfe1f12d3"
+                },
+                {
+                    "SourceId": "wnode_a7a1adb1fc3b50b298f54cba3d9289652c0a6b6b970193d243ba271ea945b536",
+                    "DestinationId": "wnode_0c9c8eb0584ab030d529092fd28ea1fde93f03c26700a436665ab55bab707faa"
+                },
+                {
+                    "SourceId": "wnode_557708a162caf2aeba57ae9f0f6fa8e1e6515e335652ba4837c0bd110b96f1e4",
+                    "DestinationId": "wnode_54ba1c4e5ef4c8ec572f4e13186071d0c37c3128edfe7ef2fa7cbc01a711ceb5"
+                },
+                {
+                    "SourceId": "wnode_cfb04b75a984decf970a9121a8dd3083dd7ad66fe9387949618ed39eb7d20b8d",
+                    "DestinationId": "wnode_4c8047d424ddbce98012a3609c2f7d2489558d4722d40310c70f66725e831a74"
+                },
+                {
+                    "SourceId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8",
+                    "DestinationId": "wnode_ca0a34bfe53b09b65ef488356120994fb860f6f58e6b7cbbe2f5b246595b5f58"
+                },
+                {
+                    "SourceId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8",
+                    "DestinationId": "wnode_4aad1105352ee01c27478627e1287257bf9b215a978248a1f18595d5cac01fd9"
+                },
+                {
+                    "SourceId": "wnode_cfb04b75a984decf970a9121a8dd3083dd7ad66fe9387949618ed39eb7d20b8d",
+                    "DestinationId": "wnode_ebe3baef201b13f3c0a47238dbaad75cb2f6c5215d9d91dcd01889ada17b1b90"
+                },
+                {
+                    "SourceId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8",
+                    "DestinationId": "wnode_82a38b3ad1fc01dfd355b3672e4b1c32c1bd3a8a1ab55c71e5b9dd6ca1fec891"
+                },
+                {
+                    "SourceId": "wnode_cfb04b75a984decf970a9121a8dd3083dd7ad66fe9387949618ed39eb7d20b8d",
+                    "DestinationId": "wnode_01dad74b780aac6d9812e14d582d12eebb9396a08fe6b91148cfb87923d22d34"
+                },
+                {
+                    "SourceId": "wnode_7360fc0bd36b095d1ab19ef9ebd5cf557fc11dc36c5f78aef83b7634aa6b105a",
+                    "DestinationId": "wnode_457848afcd0218479179a96dd6a7370af6727152116f6cc5169ffb42ebd0e774"
+                },
+                {
+                    "SourceId": "wnode_f654d68d138e9c871e259e74b8f6883d386a7fec102bab3889a904477e9cc542",
+                    "DestinationId": "wnode_9687c48563c5fee6c6bdc31dbc5496b0462f7e6df514721db6349f22e681163c"
+                },
+                {
+                    "SourceId": "wnode_ebe3baef201b13f3c0a47238dbaad75cb2f6c5215d9d91dcd01889ada17b1b90",
+                    "DestinationId": "wnode_a7a1adb1fc3b50b298f54cba3d9289652c0a6b6b970193d243ba271ea945b536"
+                },
+                {
+                    "SourceId": "wnode_01dad74b780aac6d9812e14d582d12eebb9396a08fe6b91148cfb87923d22d34",
+                    "DestinationId": "wnode_e171e1dd5139e896a216bf147d0e84a215988c6e713334c14536e7300ed6c5dd"
+                },
+                {
+                    "SourceId": "wnode_4c8047d424ddbce98012a3609c2f7d2489558d4722d40310c70f66725e831a74",
+                    "DestinationId": "wnode_c599a9a6100df9cbac8bbf45a14b01e6f3445801f2b178b7cd3d0aebb4938c08"
+                },
+                {
+                    "SourceId": "wnode_a42abaff113bf522571bee596e33c3a75eb40031c27cbe182342350338df0a75",
+                    "DestinationId": "wnode_941744e40992ced1fef04e33cbb36005b1137b41e8e3c171e104551c82839477"
+                },
+                {
+                    "SourceId": "wnode_457848afcd0218479179a96dd6a7370af6727152116f6cc5169ffb42ebd0e774",
+                    "DestinationId": "wnode_7e1241a41fdc24bdafdbe6e8ac84d19c1a2b66de5e2f96e5f31c90f21e4661f8"
+                },
+                {
+                    "SourceId": "wnode_f15b4b28a088b78246823b5293d50f68d0543d49b74cdaf37abc82efc2325a95",
+                    "DestinationId": "wnode_557708a162caf2aeba57ae9f0f6fa8e1e6515e335652ba4837c0bd110b96f1e4"
+                },
+                {
+                    "SourceId": "wnode_4ca232507967af6eb41d2ccdfbb0b2c6bb7eddcbbb10618d407bb18f79605f70",
+                    "DestinationId": "wnode_7360fc0bd36b095d1ab19ef9ebd5cf557fc11dc36c5f78aef83b7634aa6b105a"
+                },
+                {
+                    "SourceId": "wnode_f15b4b28a088b78246823b5293d50f68d0543d49b74cdaf37abc82efc2325a95",
+                    "DestinationId": "wnode_7360fc0bd36b095d1ab19ef9ebd5cf557fc11dc36c5f78aef83b7634aa6b105a"
+                },
+                {
+                    "SourceId": "wnode_9687c48563c5fee6c6bdc31dbc5496b0462f7e6df514721db6349f22e681163c",
+                    "DestinationId": "wnode_c1bf48a2390e2fb27b7a025b26ec38f66a84fc613fde88fd5418fe646ed77416"
+                },
+                {
+                    "SourceId": "wnode_72487bac9ed1a401f01cf9d0d8b23adda921db121aaa0c9d517c47c7f815b24f",
+                    "DestinationId": "wnode_f654d68d138e9c871e259e74b8f6883d386a7fec102bab3889a904477e9cc542"
+                },
+                {
+                    "SourceId": "wnode_72487bac9ed1a401f01cf9d0d8b23adda921db121aaa0c9d517c47c7f815b24f",
+                    "DestinationId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8"
+                },
+                {
+                    "SourceId": "wnode_0c9c8eb0584ab030d529092fd28ea1fde93f03c26700a436665ab55bab707faa",
+                    "DestinationId": "wnode_0d2617af60a62dde02f4c86f70c0a91660dfb9b9f8a842ebc5b7491de555c7c8"
+                }
+            ]
+        }
+    }
+}

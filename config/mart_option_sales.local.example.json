@@ -1,0 +1,6 @@
+{
+  "JOB_NAME": "restaurant_mart_option_sales",
+  "ORDER_ITEM_OPTIONS_SILVER_BASE_PATH": "s3://<bucket-name>/silver/order_item_options_clean",
+  "MART_BASE_PATH": "s3://<bucket-name>/marts/option_sales",
+  "INGEST_DATE": "YYYY-MM-DD optional; omit to use current UTC date"
+}
