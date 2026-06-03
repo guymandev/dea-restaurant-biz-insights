@@ -10,7 +10,11 @@ The workflow orchestrates movement through the following layers:
 SQL Server → S3 raw → S3 silver → S3 gold → S3 marts
 ```
 
-## Workflow diagram
+## AWS Glue console workflow screenshot
+
+![AWS Glue workflow overview](images/glue_workflow_overview.png)
+
+## Mermaid Workflow diagram
 
 ```mermaid
 flowchart LR
