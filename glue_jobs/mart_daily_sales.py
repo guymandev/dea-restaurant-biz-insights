@@ -335,8 +335,10 @@ def main() -> None:
             f"daily_sales_total={total_net_revenue}"
         )
 
+    daily_sales_clean_to_write = daily_sales.drop("ingest_date")
+
     (
-        daily_sales
+        daily_sales_clean_to_write
         .write
         .mode("overwrite")
         .parquet(mart_output_path)

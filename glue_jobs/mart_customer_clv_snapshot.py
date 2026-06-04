@@ -215,8 +215,10 @@ def main() -> None:
             f"distinct_customer_count={distinct_customer_count}"
         )
 
+    snapshot_clean_to_write = snapshot.drop("ingest_date")
+
     (
-        snapshot
+        snapshot_clean_to_write
         .write
         .mode("overwrite")
         .parquet(mart_output_path)

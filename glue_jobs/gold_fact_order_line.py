@@ -199,7 +199,7 @@ def main() -> None:
             F.coalesce(F.col("opt.has_discount"), F.lit(False)).alias("has_discount"),
             F.col("oi.is_valid_order_item_key"),
             F.col("oi.has_user_id"),
-            F.col("oi.ingest_date"),
+            F.lit(ingest_date).alias("ingest_date"),
         )
         .withColumn(
             "net_line_revenue",
@@ -273,8 +273,10 @@ def main() -> None:
             f"order_items_count={order_items_count}, fact_count={fact_count}"
         )
 
+    fact_order_line_clean_to_write = fact_order_line.drop("ingest_date")
+
     (
-        fact_order_line
+        fact_order_line_clean_to_write
         .write
         .mode("overwrite")
         .parquet(gold_output_path)

@@ -349,8 +349,10 @@ def main() -> None:
             f"restaurant_daily_sales_order_count={total_order_count}"
         )
 
+    restaurant_daily_sales_clean_to_write = restaurant_daily_sales.drop("ingest_date")
+
     (
-        restaurant_daily_sales
+        restaurant_daily_sales_clean_to_write
         .write
         .mode("overwrite")
         .parquet(mart_output_path)

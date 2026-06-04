@@ -292,8 +292,10 @@ def main() -> None:
             f"mart_total={total_mart_option_quantity}"
         )
 
+    option_sales_clean_to_write = option_sales.drop("ingest_date")
+
     (
-        option_sales
+        option_sales_clean_to_write
         .write
         .mode("overwrite")
         .parquet(mart_output_path)

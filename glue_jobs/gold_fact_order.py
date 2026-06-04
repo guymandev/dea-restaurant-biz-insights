@@ -210,8 +210,10 @@ def main() -> None:
             f"{duplicate_order_id_count} duplicate order_id groups."
         )
 
+    fact_order_clean_to_write = fact_order.drop("ingest_date")
+
     (
-        fact_order
+        fact_order_clean_to_write
         .write
         .mode("overwrite")
         .parquet(gold_output_path)

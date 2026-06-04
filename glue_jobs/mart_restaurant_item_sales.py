@@ -275,8 +275,10 @@ def main() -> None:
             f"restaurant_item_sales_quantity={total_mart_item_quantity}"
         )
 
+    restaurant_item_sales_clean_to_write = restaurant_item_sales.drop("ingest_date")
+
     (
-        restaurant_item_sales
+        restaurant_item_sales_clean_to_write
         .write
         .mode("overwrite")
         .parquet(mart_output_path)

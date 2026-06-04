@@ -285,8 +285,10 @@ def main() -> None:
             f"distinct_customer_count={distinct_customer_count}"
         )
 
+    rfm_segmented_clean_to_write = rfm_segmented.drop("ingest_date")
+
     (
-        rfm_segmented
+        rfm_segmented_clean_to_write
         .write
         .mode("overwrite")
         .parquet(mart_output_path)

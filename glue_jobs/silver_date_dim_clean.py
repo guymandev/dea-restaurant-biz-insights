@@ -186,8 +186,10 @@ def main() -> None:
             f"Row count mismatch: raw_count={raw_count}, clean_count={clean_count}"
         )
 
+    df_clean_to_write = df_clean.drop("ingest_date")
+    
     (
-        df_clean
+        df_clean_to_write
         .write
         .mode("overwrite")
         .parquet(silver_output_path)
