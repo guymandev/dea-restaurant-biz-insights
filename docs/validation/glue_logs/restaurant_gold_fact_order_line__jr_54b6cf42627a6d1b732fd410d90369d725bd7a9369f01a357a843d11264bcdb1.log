@@ -1,0 +1,17 @@
+Reading silver order_items from: s3://dea-restaurant-biz-insights/silver/order_items_clean/ingest_date=2026-05-27/
+Reading silver order_item_options from: s3://dea-restaurant-biz-insights/silver/order_item_options_clean/ingest_date=2026-05-27/
+Writing gold fact_order_line to: s3://dea-restaurant-biz-insights/gold/fact_order_line/ingest_date=2026-05-27/
+	Silver order_items row count: 203519
+Silver order_item_options row count: 193017
+	Aggregated option line-item row count: 102712
+	Gold fact_order_line row count: 203519
+Line items with options: 102697
+Line items with discounts: 0
+Unmatched option line-item keys: 15
+Total gross item revenue: 9933754.69
+Total option revenue: 85245.14
+Total discount amount: 0.00
+Total net line revenue: 10018999.83
+	Successfully wrote gold fact_order_line to: s3://dea-restaurant-biz-insights/gold/fact_order_line/ingest_date=2026-05-27/
+	Running autoDebugger shutdown hook.
+

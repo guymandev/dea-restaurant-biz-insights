@@ -1,0 +1,17 @@
+Reading customer_clv_snapshot mart from: s3://dea-restaurant-biz-insights/marts/customer_clv_snapshot/ingest_date=2026-05-27/
+Writing customer_rfm mart to: s3://dea-restaurant-biz-insights/marts/customer_rfm/ingest_date=2026-05-27/
+	customer_clv_snapshot row count: 20174
+	customer_clv_snapshot columns: ['user_id', 'first_order_date', 'latest_order_date', 'customer_lifetime_days', 'lifetime_order_count', 'lifetime_net_revenue', 'latest_daily_order_count', 'latest_daily_net_revenue', 'latest_daily_restaurant_count', 'latest_is_loyalty_customer_day', 'clv_quartile', 'clv_tier']
+	RFM as_of_date: 2024-02-20
+	Customer RFM mart row count: 20174
+Distinct customers in RFM mart: 20174
+Total lifetime net revenue in RFM mart: 7777702.34
+RFM segment count - champions: 2030
+RFM segment count - loyal_high_value: 3402
+RFM segment count - new_or_promising: 1443	
+	RFM segment count - at_risk_high_value: 2855
+RFM segment count - needs_attention: 4175
+RFM segment count - hibernating: 6269
+	Successfully wrote customer_rfm mart to: s3://dea-restaurant-biz-insights/marts/customer_rfm/ingest_date=2026-05-27/
+	Running autoDebugger shutdown hook.
+

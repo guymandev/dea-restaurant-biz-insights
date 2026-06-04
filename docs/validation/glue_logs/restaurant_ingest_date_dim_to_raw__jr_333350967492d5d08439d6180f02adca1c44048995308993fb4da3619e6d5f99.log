@@ -1,0 +1,6 @@
+Starting ingestion for table: dbo.date_dim
+Writing output to: s3://dea-restaurant-biz-insights/raw/date_dim/ingest_date=2026-06-04/
+	Rows read from dbo.date_dim: 365
+	Successfully wrote 365 rows to s3://dea-restaurant-biz-insights/raw/date_dim/ingest_date=2026-06-04/
+	Running autoDebugger shutdown hook.
+

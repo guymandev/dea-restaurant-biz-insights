@@ -1,0 +1,11 @@
+Reading raw order_items from: s3://dea-restaurant-biz-insights/raw/order_items/ingest_date=2026-05-27/
+Writing silver order_items_clean to: s3://dea-restaurant-biz-insights/silver/order_items_clean/ingest_date=2026-05-27/
+	Raw row count: 203519
+	Raw columns: ['APP_NAME', 'RESTAURANT_ID', 'CREATION_TIME_UTC', 'ORDER_ID', 'USER_ID', 'PRINTED_CARD_NUMBER', 'IS_LOYALTY', 'CURRENCY', 'LINEITEM_ID', 'ITEM_CATEGORY', 'ITEM_NAME', 'ITEM_PRICE', 'ITEM_QUANTITY']
+	Silver row count: 203519
+Invalid order item key rows: 1
+Missing user_id rows: 17808
+Invalid creation_time_utc rows: 0
+	Successfully wrote silver order_items_clean to: s3://dea-restaurant-biz-insights/silver/order_items_clean/ingest_date=2026-05-27/
+	Running autoDebugger shutdown hook.
+

@@ -1,0 +1,10 @@
+Reading raw date_dim from: s3://dea-restaurant-biz-insights/raw/date_dim/ingest_date=2026-05-27/
+Writing silver date_dim_clean to: s3://dea-restaurant-biz-insights/silver/date_dim_clean/ingest_date=2026-05-27/
+	Raw row count: 365
+	Raw columns: ['date_key', 'year', 'month', 'week', 'day_of_week', 'is_weekend', 'is_holiday', 'holiday_name']
+	Silver row count: 365
+Invalid date_key rows: 0
+Duplicate date_key groups: 0
+	Successfully wrote silver date_dim_clean to: s3://dea-restaurant-biz-insights/silver/date_dim_clean/ingest_date=2026-05-27/
+	Running autoDebugger shutdown hook.
+

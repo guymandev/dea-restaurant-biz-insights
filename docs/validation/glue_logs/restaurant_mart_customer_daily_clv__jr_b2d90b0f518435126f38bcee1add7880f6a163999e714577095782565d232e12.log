@@ -1,0 +1,15 @@
+Reading gold fact_order from: s3://dea-restaurant-biz-insights/gold/fact_order/ingest_date=2026-05-27/
+Writing mart customer_daily_clv to: s3://dea-restaurant-biz-insights/marts/customer_daily_clv/ingest_date=2026-05-27/
+	fact_order row count: 131328
+	fact_order columns: ['order_id', 'app_name', 'restaurant_id', 'order_created_at_utc', 'order_date', 'user_id', 'printed_card_number', 'currency', 'line_item_count', 'distinct_line_item_count', 'total_item_quantity', 'gross_item_revenue', 'option_revenue', 'discount_amount', 'net_order_revenue', 'option_row_count', 'is_loyalty', 'has_options', 'has_discount', 'has_user_id', 'all_line_keys_valid']
+	Customer-attributed order count: 118659
+	Customer-attributed order total net revenue: 7777702.34
+	Daily customer spend row count: 100271
+Daily customer spend total net revenue: 7777702.34
+	Mart customer_daily_clv row count: 100271
+Distinct customers in mart: 20174
+Final mart total daily net revenue: 7777702.34
+Max cumulative net revenue: 2505352.46
+	Successfully wrote mart customer_daily_clv to: s3://dea-restaurant-biz-insights/marts/customer_daily_clv/ingest_date=2026-05-27/
+	Running autoDebugger shutdown hook.
+

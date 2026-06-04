@@ -1,0 +1,6 @@
+Starting ingestion for table: dbo.order_item_options
+Writing output to: s3://dea-restaurant-biz-insights/raw/order_item_options/ingest_date=2026-06-04/
+	Rows read from dbo.order_item_options: 193017
+	Successfully wrote 193017 rows to s3://dea-restaurant-biz-insights/raw/order_item_options/ingest_date=2026-06-04/
+	Running autoDebugger shutdown hook.
+

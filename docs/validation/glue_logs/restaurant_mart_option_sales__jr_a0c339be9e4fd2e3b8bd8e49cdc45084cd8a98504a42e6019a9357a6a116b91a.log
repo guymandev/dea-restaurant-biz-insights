@@ -1,0 +1,17 @@
+Reading silver order_item_options_clean from: s3://dea-restaurant-biz-insights/silver/order_item_options_clean/ingest_date=2026-05-27/
+Writing option_sales mart to: s3://dea-restaurant-biz-insights/marts/option_sales/ingest_date=2026-05-27/
+	order_item_options_clean row count: 193017
+	order_item_options_clean columns: ['order_id', 'lineitem_id', 'option_group_name', 'option_name', 'option_price', 'option_quantity', 'option_revenue', 'is_discount', 'discount_amount', 'is_valid_option_key', 'candidate_option_key']
+	Option sales mart row count: 1486
+Distinct option group/name combinations: 1486
+Total source option revenue: 85269.14
+Total option_sales option revenue: 85269.14
+Total source discount amount: 0.00
+Total option_sales discount amount: 0.00
+Total source option quantity: 193017
+Total option_sales option quantity: 193017
+Top option by revenue: option_group_name=Breakfast Burrito Options, option_name=Add Smokehouse Bacon, option_revenue=3495.00
+Top option by quantity: option_group_name=Milk Options, option_name=Add Almond Milk, total_option_quantity=5598
+	Successfully wrote option_sales mart to: s3://dea-restaurant-biz-insights/marts/option_sales/ingest_date=2026-05-27/
+	Running autoDebugger shutdown hook.
+

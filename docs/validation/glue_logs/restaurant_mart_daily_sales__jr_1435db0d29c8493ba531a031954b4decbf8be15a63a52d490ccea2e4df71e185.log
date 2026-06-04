@@ -1,0 +1,24 @@
+Reading gold fact_order from: s3://dea-restaurant-biz-insights/gold/fact_order/ingest_date=2026-05-27/
+Reading silver date_dim_clean from: s3://dea-restaurant-biz-insights/silver/date_dim_clean/ingest_date=2026-05-27/
+Writing daily_sales mart to: s3://dea-restaurant-biz-insights/marts/daily_sales/ingest_date=2026-05-27/
+	fact_order row count: 131328
+date_dim_clean row count: 365
+	fact_order columns: ['order_id', 'app_name', 'restaurant_id', 'order_created_at_utc', 'order_date', 'user_id', 'printed_card_number', 'currency', 'line_item_count', 'distinct_line_item_count', 'total_item_quantity', 'gross_item_revenue', 'option_revenue', 'discount_amount', 'net_order_revenue', 'option_row_count', 'is_loyalty', 'has_options', 'has_discount', 'has_user_id', 'all_line_keys_valid']
+	date_dim_clean columns: ['date_key', 'year', 'month', 'week', 'day_of_week', 'is_weekend', 'is_holiday', 'holiday_name', 'day_of_month', 'quarter', 'month_name', 'is_valid_date_key']
+	daily_sales_base row count: 1343
+	fact_order min order_date: 2020-04-21
+fact_order max order_date: 2024-02-20
+date_dim min date_key: 2023-01-01
+date_dim max date_key: 2023-12-31
+	Unmatched date_dim rows before fallback: 978
+	Daily sales mart row count: 1343
+Unmatched date_dim rows: 978
+Total order count in daily_sales mart: 131328
+Total net revenue in daily_sales mart: 10018999.83
+Max daily net revenue: 2500363.66
+Min order_date: 2020-04-21
+Max order_date: 2024-02-20
+WARNING: Some daily_sales rows did not match date_dim_clean. Derived date attributes from order_date for unmatched rows. unmatched_date_count=978
+	Successfully wrote daily_sales mart to: s3://dea-restaurant-biz-insights/marts/daily_sales/ingest_date=2026-05-27/
+	Running autoDebugger shutdown hook.
+

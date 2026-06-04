@@ -1,0 +1,14 @@
+Reading raw order_item_options from: s3://dea-restaurant-biz-insights/raw/order_item_options/ingest_date=2026-05-27/
+Writing silver order_item_options_clean to: s3://dea-restaurant-biz-insights/silver/order_item_options_clean/ingest_date=2026-05-27/
+	Raw row count: 193017
+Raw columns: ['ORDER_ID', 'LINEITEM_ID', 'OPTION_GROUP_NAME', 'OPTION_NAME', 'OPTION_PRICE', 'OPTION_QUANTITY']
+	Silver row count: 193017
+Invalid option key rows: 0
+Discount rows: 0
+Null option_price rows: 0
+Null option_quantity rows: 0
+Duplicate candidate option key groups: 616
+Duplicate candidate option key rows: 2299
+	Successfully wrote silver order_item_options_clean to: s3://dea-restaurant-biz-insights/silver/order_item_options_clean/ingest_date=2026-05-27/
+	Running autoDebugger shutdown hook.
+

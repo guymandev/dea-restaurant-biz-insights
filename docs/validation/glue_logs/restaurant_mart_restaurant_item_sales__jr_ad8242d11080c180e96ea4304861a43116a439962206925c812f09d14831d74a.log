@@ -1,0 +1,17 @@
+Reading gold fact_order_line from: s3://dea-restaurant-biz-insights/gold/fact_order_line/ingest_date=2026-05-27/
+Writing restaurant_item_sales mart to: s3://dea-restaurant-biz-insights/marts/restaurant_item_sales/ingest_date=2026-05-27/
+	fact_order_line row count: 203519
+	fact_order_line columns: ['order_id', 'lineitem_id', 'app_name', 'restaurant_id', 'creation_time_utc', 'order_date', 'user_id', 'printed_card_number', 'is_loyalty', 'currency', 'item_category', 'item_name', 'item_price', 'item_quantity', 'gross_item_revenue', 'option_revenue', 'discount_amount', 'option_row_count', 'has_options', 'has_discount', 'is_valid_order_item_key', 'has_user_id', 'net_line_revenue']
+	Restaurant item sales mart row count: 2506
+Distinct restaurants in restaurant_item_sales mart: 28
+Distinct restaurant/item/category combinations: 2506
+Total source net revenue: 10018999.83
+Total restaurant_item_sales net revenue: 10018999.83
+Total source line item count: 203519
+Total restaurant_item_sales line item count: 203519
+Total source item quantity: 227487
+Total restaurant_item_sales item quantity: 227487
+	Top restaurant item by net revenue: restaurant_id=5e7e35f0902ad5ac017b242d, category=Bowls, item_name=Korean Kimchi, net_revenue=2500410.00
+	Successfully wrote restaurant_item_sales mart to: s3://dea-restaurant-biz-insights/marts/restaurant_item_sales/ingest_date=2026-05-27/
+	Running autoDebugger shutdown hook.
+
