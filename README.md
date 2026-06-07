@@ -24,6 +24,20 @@ The project was designed to answer common restaurant business questions such as:
 * Which modifiers/options generate the most revenue or quantity?
 * Are the mart outputs internally consistent and reconcilable to the pipeline logs?
 
+## Design Artifacts
+
+The project includes two design artifacts: a high-level AWS architecture diagram and a DBML-based lakehouse data model diagram.
+
+### Architecture Diagram
+
+![Restaurant Business Insights Architecture](docs/images/global_partners_architecture.png)
+
+### Lakehouse Data Model Diagram
+
+The implemented lakehouse data model and mart lineage diagram is available here:
+
+[View database diagram in diagrams.net](https://app.diagrams.net/#G10nhbPgSDKBRZAFeNH_h6KOpEsyCOLb0Q#%7B%22pageId%22%3A%22hrCOVXS4h1fukCo-Mxfb%22%7D)
+
 ## Technology Stack
 
 | Area                  | Technology                                      |
