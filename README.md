@@ -12,6 +12,12 @@ SQL Server → AWS Glue → S3 Raw → S3 Silver → S3 Gold → S3 Marts → Gl
 
 The final output is a set of curated analytical marts that support executive, restaurant, menu item, customer, and option/modifier reporting.
 
+## Video Walkthrough
+
+A recorded walkthrough of the project is available here:
+
+[Global Biz Partners Walkthrough Video](docs/videos/global-biz-partners-walkthrough.mp4)
+
 ## Business Goals
 
 The project was designed to answer common restaurant business questions such as:
