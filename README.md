@@ -197,11 +197,31 @@ Mart jobs:
 | `restaurant_mart_restaurant_item_sales`  | `restaurant_item_sales`  | Restaurant/item combination performance            |
 | `restaurant_mart_option_sales`           | `option_sales`           | Modifier/option performance metrics                |
 
-## Glue Workflow Orchestration
+### Glue Workflow Orchestration
 
 The pipeline is orchestrated with an AWS Glue Workflow.
 
-The workflow starts with the raw ingestion jobs, proceeds through silver jobs, then gold jobs, then mart jobs. Conditional Glue triggers ensure downstream jobs only run after required upstream jobs succeed.
+The workflow includes a scheduled Glue start trigger:
+
+```text
+restaurant_daily_pipeline_schedule_trigger
+```
+
+This trigger starts the three raw ingestion jobs on a UTC cron schedule:
+
+```text
+Monday at 06:00 UTC
+```
+
+The scheduled trigger starts:
+
+```text
+restaurant_ingest_date_dim_to_raw
+restaurant_ingest_order_items_to_raw
+restaurant_ingest_order_item_options_to_raw
+```
+
+After the raw ingestion jobs complete, downstream conditional Glue triggers automatically orchestrate the Silver, Gold, Mart, and crawler stages based on successful completion of upstream jobs.
 
 The workflow concludes with a Glue crawler:
 
@@ -209,7 +229,7 @@ The workflow concludes with a Glue crawler:
 restaurant-marts-crawler
 ```
 
-The crawler updates the Glue Data Catalog database so that Athena can query the latest mart outputs.
+The crawler updates the Glue Data Catalog so that Athena can query the latest mart outputs.
 
 A generated workflow documentation file is included in the repository:
 
@@ -471,21 +491,29 @@ The `initial_restaurant_analysis.py` script was used during the discovery phase 
 
 ## How to Run the Pipeline
 
-### 1. Run the Glue Workflow
+### 1. Scheduled Execution
 
-In AWS Glue, run:
+The Glue workflow is configured with a scheduled Glue start trigger:
 
 ```text
-restaurant_daily_pipeline_workflow
+restaurant_daily_pipeline_schedule_trigger
 ```
 
-The workflow executes ingestion, silver, gold, and mart jobs, then runs the marts crawler.
+The trigger runs the workflow every Monday at 06:00 UTC by starting the three raw ingestion jobs. The remaining pipeline stages are handled by downstream conditional Glue triggers.
 
-### 2. Confirm Workflow Completion
+### 2. Manual Execution for Testing
+
+The workflow can also be run manually from the AWS Glue console when testing or validating changes:
+
+```text
+AWS Glue → Workflows → restaurant_daily_pipeline_workflow → Run workflow
+```
+
+### 3. Confirm Workflow Completion
 
 Verify that all jobs and the final crawler complete successfully.
 
-### 3. Query the Mart Tables in Athena
+### 4. Query the Mart Tables in Athena
 
 Use database:
 
@@ -510,7 +538,7 @@ total_orders: 131328
 total_net_revenue: 10018999.83
 ```
 
-### 4. View the Dashboard
+### 5. View the Dashboard
 
 The Streamlit dashboard connects to Athena and displays the final business-facing analytics.
 
